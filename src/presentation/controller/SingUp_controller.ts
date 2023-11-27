@@ -5,21 +5,13 @@ import { httpResponse, httpResquest } from "./protocols/http_interface";
 
 export class SingUp implements controller {
   handle(httpResquest: httpResquest): httpResponse {
-    if (!httpResquest.body.name) {
-      return badRequest(new MissingParamsError("name"));
+    const validats = ["name", "email", "password", "passwordConfirm"];
+    for (let errorName of validats) {
+      if (!httpResquest.body[errorName]) {
+        return badRequest(new MissingParamsError(errorName));
+      }
     }
-    if (!httpResquest.body.email) {
-      return {
-        statusCode: 400,
-        body: new Error("missing param: email"),
-      };
-    }
-    if (!httpResquest.body.password && !httpResquest.body.passwordConfirm) {
-      return {
-        statusCode: 400,
-        body: new Error("missing param: password"),
-      };
-    }
+
     if (httpResquest.body.password !== httpResquest.body.passwordConfirm) {
       return {
         statusCode: 400,

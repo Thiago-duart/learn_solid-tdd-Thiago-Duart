@@ -1,5 +1,5 @@
-import { httpResponse, httpResquest } from "./http_interface";
+import { HttpResponse, HttpResquest } from "./http_interface";
 
-export interface controller {
-  handle(httpResquest: httpResquest): httpResponse;
+export interface Controller {
+  handle(httpResquest: HttpResquest): HttpResponse;
 }

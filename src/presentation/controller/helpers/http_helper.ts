@@ -1,7 +1,6 @@
-import { MissingParamsError } from "../errors/MissingParams_error";
-import { httpResponse } from "../protocols/http_interface";
+import { HttpResponse } from "../protocols/http_interface";
 
-export const badRequest = (error: Error): httpResponse => {
+export const badRequest = (error: Error): HttpResponse => {
   return {
     statusCode: 400,
     body: error,

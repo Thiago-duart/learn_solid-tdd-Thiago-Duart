@@ -6,5 +6,5 @@ export interface AddAccountModel {
   password: "valid_password";
 }
 export interface AddAccount {
-  add(accountData: AddAccountModel): AccountModel;
+  add(accountData: AddAccountModel): Promise<AccountModel>;
 }

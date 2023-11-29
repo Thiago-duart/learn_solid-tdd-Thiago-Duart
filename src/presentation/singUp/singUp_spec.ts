@@ -182,4 +182,23 @@ describe("SingUp controller", () => {
       password: "any_password",
     });
   });
+  test("should return 200 and returns the body ", () => {
+    const { sut } = makeSut();
+    const httpResquest = {
+      body: {
+        name: "any_name",
+        email: "invalid_mail.com",
+        password: "any_password",
+        passwordConfirm: "any_password",
+      },
+    };
+    const httpResponse = sut.handle(httpResquest);
+    expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body).toEqual({
+      id: 1,
+      name: "valid_name",
+      email: "valid_mail.com",
+      password: "valid_password",
+    });
+  });
 });

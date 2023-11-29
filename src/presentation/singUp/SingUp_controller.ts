@@ -5,7 +5,7 @@ import {
   HttpResponse,
   HttpResquest,
 } from "./singUp_protocols";
-import { badRequest, serverError } from "../controller/helpers/http_helper";
+import { badRequest, ok, serverError } from "../controller/helpers/http_helper";
 import {
   ServerError,
   InvalidParamsError,
@@ -38,10 +38,7 @@ export class SingUpController implements Controller {
         return badRequest(new InvalidParamsError("email"));
       }
       const responseAccount = this.addAccount.add({ name, email, password });
-      return {
-        statusCode: 1,
-        body: {},
-      };
+      return ok(responseAccount);
     } catch (error) {
       return serverError(new ServerError());
     }

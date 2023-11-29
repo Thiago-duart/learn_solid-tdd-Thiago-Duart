@@ -19,10 +19,7 @@ export class SingUpController implements Controller {
         }
       }
       if (httpResquest.body.password !== httpResquest.body.passwordConfirm) {
-        return {
-          statusCode: 400,
-          body: new Error("Password does not match"),
-        };
+        return badRequest(new InvalidParamsError("Password does not match"));
       }
       const isValid = this.emailValidate.isValid(httpResquest.body.email);
       if (!isValid) {

@@ -99,7 +99,9 @@ describe("SingUp controller", () => {
     };
     const httpResponse = sut.handle(httpResquest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new Error("Password does not match"));
+    expect(httpResponse.body).toEqual(
+      new InvalidParamsError("Password does not match")
+    );
   });
   test("should return 400 if the email is not valid", () => {
     const { sut, emailValidateStub } = makeSut();

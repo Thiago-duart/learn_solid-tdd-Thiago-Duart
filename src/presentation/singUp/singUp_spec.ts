@@ -182,6 +182,25 @@ describe("SingUp controller", () => {
       password: "any_password",
     });
   });
+  test("Should return 500 if emailValidate is an exception", async () => {
+    const { sut, addAccountStub } = makeSut();
+    jest.spyOn(addAccountStub, "add").mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const httpResquest = {
+      body: {
+        name: "any_name",
+        email: "any_mail.com",
+        password: "any_password",
+        passwordConfirm: "any_password",
+      },
+    };
+    const httpResponse = await sut.handle(httpResquest);
+
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
   test("should return 200 and returns the body ", async () => {
     const { sut } = makeSut();
     const httpResquest = {

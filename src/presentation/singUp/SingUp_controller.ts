@@ -1,8 +1,16 @@
 import { AddAccount } from "../../domain/usecases/add_account";
-import { EmailValidate, Controller } from "./protocols";
-import { badRequest, serverError } from "./helpers/http_helper";
-import { HttpResponse, HttpResquest } from "./protocols/http_interface";
-import { ServerError, InvalidParamsError, MissingParamsError } from "./errors";
+import {
+  EmailValidate,
+  Controller,
+  HttpResponse,
+  HttpResquest,
+} from "./singUp_protocols";
+import { badRequest, serverError } from "../controller/helpers/http_helper";
+import {
+  ServerError,
+  InvalidParamsError,
+  MissingParamsError,
+} from "../controller/errors";
 
 export class SingUpController implements Controller {
   private readonly emailValidate: EmailValidate;

@@ -1,6 +1,10 @@
 import { SingUpController } from "./SingUp_controller";
-import { EmailValidate } from "./protocols";
-import { ServerError, InvalidParamsError, MissingParamsError } from "./errors";
+import { EmailValidate } from "./singUp_protocols";
+import {
+  ServerError,
+  InvalidParamsError,
+  MissingParamsError,
+} from "../controller/errors";
 import { AddAccount, AddAccountModel } from "../../domain/usecases/add_account";
 import { AccountModel } from "../../domain/models/account";
 

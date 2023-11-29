@@ -1,9 +1,7 @@
-import { EmailValidate } from "./protocols/emailValidator_interface";
-import { MissingParamsError } from "./errors/MissingParams_error";
-import { badRequest } from "./helpers/http_helper";
-import { Controller } from "./protocols/controller_interface";
+import { EmailValidate, Controller } from "./protocols";
+import { badRequest, serverError } from "./helpers/http_helper";
 import { HttpResponse, HttpResquest } from "./protocols/http_interface";
-import { InvalidParamsError } from "./errors/InvalidParams_error";
+import { ServerError, InvalidParamsError, MissingParamsError } from "./errors";
 
 export class SingUpController implements Controller {
   private readonly emailValidate: EmailValidate;
@@ -13,25 +11,30 @@ export class SingUpController implements Controller {
   }
 
   handle(httpResquest: HttpResquest): HttpResponse {
-    const validats = ["name", "email", "password", "passwordConfirm"];
-    for (let errorName of validats) {
-      if (!httpResquest.body[errorName]) {
-        return badRequest(new MissingParamsError(errorName));
+    try {
+      const validats = ["name", "email", "password", "passwordConfirm"];
+      for (let errorName of validats) {
+        if (!httpResquest.body[errorName]) {
+          return badRequest(new MissingParamsError(errorName));
+        }
       }
-    }
-    if (httpResquest.body.password !== httpResquest.body.passwordConfirm) {
+      if (httpResquest.body.password !== httpResquest.body.passwordConfirm) {
+        return {
+          statusCode: 400,
+          body: new Error("Password does not match"),
+        };
+      }
+      const isValid = this.emailValidate.isValid(httpResquest.body.email);
+      if (!isValid) {
+        return badRequest(new InvalidParamsError("email"));
+      }
+
       return {
-        statusCode: 400,
-        body: new Error("Password does not match"),
+        statusCode: 1,
+        body: {},
       };
+    } catch (error) {
+      return serverError(new ServerError());
     }
-    const isValid = this.emailValidate.isValid(httpResquest.body.email);
-    if (!isValid) {
-      return badRequest(new InvalidParamsError("email"));
-    }
-    return {
-      statusCode: 200,
-      body: "",
-    };
   }
 }

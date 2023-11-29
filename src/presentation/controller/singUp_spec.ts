@@ -1,20 +1,6 @@
 import { SingUpController } from "./SingUp_controller";
 import { EmailValidate } from "./protocols";
 import { ServerError, InvalidParamsError, MissingParamsError } from "./errors";
-interface makeSutType {
-  sut: SingUpController;
-  emailValidateStub: EmailValidate;
-}
-
-const makeEmailValidatorStubExeption = (): EmailValidate => {
-  class EmailValidateStub implements EmailValidate {
-    isValid(email: string): boolean {
-      throw new Error();
-    }
-  }
-  const emailValidateStub = new EmailValidateStub();
-  return emailValidateStub;
-};
 
 const makeEmailValidatorStub = (): EmailValidate => {
   class EmailValidateStub implements EmailValidate {
@@ -26,6 +12,10 @@ const makeEmailValidatorStub = (): EmailValidate => {
   return emailValidateStub;
 };
 
+interface makeSutType {
+  sut: SingUpController;
+  emailValidateStub: EmailValidate;
+}
 const makeSut = (): makeSutType => {
   const emailValidateStub = makeEmailValidatorStub();
   const sut = new SingUpController(emailValidateStub);
@@ -133,9 +123,11 @@ describe("SingUp controller", () => {
     sut.handle(httpResquest);
     expect(isValidSpy).toHaveBeenCalledWith("any_mail.com");
   });
-
   test("Should return 500 if emailValidate is an exception", () => {
-    const sut = new SingUpController(makeEmailValidatorStubExeption());
+    const { sut, emailValidateStub } = makeSut();
+    jest.spyOn(emailValidateStub, "isValid").mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     const httpResquest = {
       body: {

@@ -1,20 +1,33 @@
 import { SingUpController } from "./SingUp_controller";
-import { InvalidParamsError } from "./errors/InvalidParams_error";
-import { MissingParamsError } from "./errors/MissingParams_error";
-import { EmailValidate } from "./protocols/emailValidator_interface";
-
+import { EmailValidate } from "./protocols";
+import { ServerError, InvalidParamsError, MissingParamsError } from "./errors";
 interface makeSutType {
   sut: SingUpController;
   emailValidateStub: EmailValidate;
 }
 
-const makeSut = (): makeSutType => {
+const makeEmailValidatorStubExeption = (): EmailValidate => {
+  class EmailValidateStub implements EmailValidate {
+    isValid(email: string): boolean {
+      throw new Error();
+    }
+  }
+  const emailValidateStub = new EmailValidateStub();
+  return emailValidateStub;
+};
+
+const makeEmailValidatorStub = (): EmailValidate => {
   class EmailValidateStub implements EmailValidate {
     isValid(email: string): boolean {
       return true;
     }
   }
   const emailValidateStub = new EmailValidateStub();
+  return emailValidateStub;
+};
+
+const makeSut = (): makeSutType => {
+  const emailValidateStub = makeEmailValidatorStub();
   const sut = new SingUpController(emailValidateStub);
   return { sut, emailValidateStub };
 };
@@ -81,7 +94,7 @@ describe("SingUp controller", () => {
         name: "any_name",
         email: "any_mail.com",
         password: "any_password",
-        passwordConfirm: "any_passwordConfirm",
+        passwordConfirm: "invalid_password",
       },
     };
     const httpResponse = sut.handle(httpResquest);
@@ -94,7 +107,7 @@ describe("SingUp controller", () => {
     const httpResquest = {
       body: {
         name: "any_name",
-        email: "any_mail.com",
+        email: "invalid_mail.com",
         password: "any_password",
         passwordConfirm: "any_password",
       },
@@ -103,5 +116,36 @@ describe("SingUp controller", () => {
 
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new InvalidParamsError("email"));
+  });
+  test("should return 400 if the email is not the one passed in the parameter", () => {
+    const { sut, emailValidateStub } = makeSut();
+    const isValidSpy = jest.spyOn(emailValidateStub, "isValid");
+    const httpResquest = {
+      body: {
+        name: "any_name",
+        email: "any_mail.com",
+        password: "any_password",
+        passwordConfirm: "any_password",
+      },
+    };
+    sut.handle(httpResquest);
+    expect(isValidSpy).toHaveBeenCalledWith("any_mail.com");
+  });
+
+  test("Should return 500 if emailValidate is an exception", () => {
+    const sut = new SingUpController(makeEmailValidatorStubExeption());
+
+    const httpResquest = {
+      body: {
+        name: "any_name",
+        email: "any_mail.com",
+        password: "any_password",
+        passwordConfirm: "any_password",
+      },
+    };
+    const httpResponse = sut.handle(httpResquest);
+
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 });

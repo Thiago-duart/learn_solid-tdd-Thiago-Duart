@@ -206,7 +206,7 @@ describe("SingUp controller", () => {
     const httpResquest = {
       body: {
         name: "any_name",
-        email: "invalid_mail.com",
+        email: "any_mail.com",
         password: "any_password",
         passwordConfirm: "any_password",
       },

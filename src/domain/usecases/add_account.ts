@@ -1,9 +1,9 @@
 import { AccountModel } from "../models/account";
 
 export interface AddAccountModel {
-  name: "valid_name";
-  email: "valid_mail.com";
-  password: "valid_password";
+  name: string;
+  email: string;
+  password: string;
 }
 export interface AddAccount {
   add(accountData: AddAccountModel): Promise<AccountModel>;
